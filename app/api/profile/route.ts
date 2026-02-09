@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/supabase/client";
 
+export const dynamic = "force-dynamic";
+
 // Month name to number mapping
 const MONTH_MAP: Record<string, string> = {
   Januari: "1",

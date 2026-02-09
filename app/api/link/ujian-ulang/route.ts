@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/supabase/client";
 
+export const dynamic = "force-dynamic";
+
 // GET - Fetch link ujian ulang
 // Returns the first (and should be only) record
 export async function GET(request: NextRequest) {
