@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ChevronLeft, X, Save, Loader2 } from "lucide-react";
-import { format } from "date-fns";
+import { ChevronLeft, X, Save, Loader2, Download } from "lucide-react"; // Tambahkan Download icon
+import { format, addYears } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -18,6 +18,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { getProfileById, updateProfile } from "@/lib/profile-api";
 import { Profile, UpdateProfilePayload } from "@/types/profile";
 
+import generateCertificate from "@/lib/generatepdf";
+
 export default function EditUserPage({ params }: { params: Promise<{ id: string }> }) {
   // Unwrap params using React.use()
   const { id } = React.use(params);
@@ -26,6 +28,9 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
   const [profile, setProfile] = React.useState<Profile | null>(null);
+
+  // TAMBAHKAN STATE UNTUK LOADING DOWNLOAD
+  const [downloading, setDownloading] = React.useState(false);
 
   // Form States
   const [formData, setFormData] = React.useState({
@@ -50,9 +55,21 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
       reading: "",
       total: "",
     },
+    score3: {
+      listening: "",
+      structure: "",
+      reading: "",
+      total: "",
+    },
+    score4: {
+      listening: "",
+      structure: "",
+      reading: "",
+      total: "",
+    },
   });
 
-  // Fetch user data
+  // ... (kode fetch data tetap sama)
   React.useEffect(() => {
     async function loadData() {
       try {
@@ -62,7 +79,6 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
         if (data) {
           setProfile(data);
 
-          // Initialize form data
           setFormData({
             nama: data.nama || "",
             email: data.email || "",
@@ -70,12 +86,10 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
             tempat_lahir: data.tempat_lahir || "",
           });
 
-          // Initialize date
           if (data.tanggal_lahir) {
             setDate(new Date(data.tanggal_lahir));
           }
 
-          // Initialize scores
           setScores({
             score1: {
               listening: data.score_listening?.toString() || "",
@@ -88,6 +102,18 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
               structure: data.score_structure2?.toString() || "",
               reading: data.score_reading2?.toString() || "",
               total: data.total_score2?.toString() || "",
+            },
+            score3: {
+              listening: data.score_listening3?.toString() || "",
+              structure: data.score_structure3?.toString() || "",
+              reading: data.score_reading3?.toString() || "",
+              total: data.total_score3?.toString() || "",
+            },
+            score4: {
+              listening: data.score_listening4?.toString() || "",
+              structure: data.score_structure4?.toString() || "",
+              reading: data.score_reading4?.toString() || "",
+              total: data.total_score4?.toString() || "",
             },
           });
         } else {
@@ -105,30 +131,21 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
     loadData();
   }, [id, router]);
 
-  // Handle Score Change and Auto Calculate Total
-  const handleScoreChange = (scoreType: "score1" | "score2", field: "listening" | "structure" | "reading", value: string) => {
-    // Only allow numbers
+  // ... (fungsi handleScoreChange tetap sama)
+  const handleScoreChange = (scoreType: "score1" | "score2" | "score3" | "score4", field: "listening" | "structure" | "reading", value: string) => {
     if (value && !/^\d*$/.test(value)) return;
 
     setScores((prev) => {
       const currentScore = { ...prev[scoreType], [field]: value };
 
-      // Auto calculate total if all 3 fields have values
       const l = parseInt(currentScore.listening || "0");
       const s = parseInt(currentScore.structure || "0");
       const r = parseInt(currentScore.reading || "0");
 
       let total = prev[scoreType].total;
 
-      // Calculate total even if not all filled, treat empty as 0?
-      // Usually better to wait for all, but for edit convenience, let's calc if any is present or just rely on manual edits?
-      // User asked "sesuaikan dengan yang ada di database".
-      // Let's replicate the logic: ((structure + listening + reading) / 3) * 10
-
       if (currentScore.listening || currentScore.structure || currentScore.reading) {
         const calculated = ((l + s + r) / 3) * 10;
-        // Format to 1 decimal place or integer? usually TOEFL is integer.
-        // Database has float4.
         total = Math.round(calculated).toString();
       }
 
@@ -155,17 +172,25 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
         tempat_lahir: formData.tempat_lahir,
         tanggal_lahir: date ? format(date, "yyyy-MM-dd") : null,
 
-        // Score 1
         score_listening: scores.score1.listening ? parseInt(scores.score1.listening) : null,
         score_structure: scores.score1.structure ? parseInt(scores.score1.structure) : null,
         score_reading: scores.score1.reading ? parseInt(scores.score1.reading) : null,
         total_score: scores.score1.total ? parseFloat(scores.score1.total) : null,
 
-        // Score 2
         score_listening2: scores.score2.listening ? parseInt(scores.score2.listening) : null,
         score_structure2: scores.score2.structure ? parseInt(scores.score2.structure) : null,
         score_reading2: scores.score2.reading ? parseInt(scores.score2.reading) : null,
         total_score2: scores.score2.total ? parseFloat(scores.score2.total) : null,
+
+        score_listening3: scores.score3.listening ? parseInt(scores.score3.listening) : null,
+        score_structure3: scores.score3.structure ? parseInt(scores.score3.structure) : null,
+        score_reading3: scores.score3.reading ? parseInt(scores.score3.reading) : null,
+        total_score3: scores.score3.total ? parseFloat(scores.score3.total) : null,
+
+        score_listening4: scores.score4.listening ? parseInt(scores.score4.listening) : null,
+        score_structure4: scores.score4.structure ? parseInt(scores.score4.structure) : null,
+        score_reading4: scores.score4.reading ? parseInt(scores.score4.reading) : null,
+        total_score4: scores.score4.total ? parseFloat(scores.score4.total) : null,
       };
 
       await updateProfile(payload);
@@ -176,6 +201,89 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
       toast.error("Gagal menyimpan data");
     } finally {
       setSaving(false);
+    }
+  };
+
+  // TAMBAHKAN FUNGSI DOWNLOAD SERTIFIKAT
+  const handleDownloadCertificate = async () => {
+    if (!profile) {
+      toast.error("Data profile tidak tersedia");
+      return;
+    }
+
+    // Validasi data yang diperlukan
+    if (!formData.nama) {
+      toast.error("Nama tidak boleh kosong");
+      return;
+    }
+
+    if (!formData.tempat_lahir) {
+      toast.error("Tempat lahir tidak boleh kosong");
+      return;
+    }
+
+    if (!date) {
+      toast.error("Tanggal lahir tidak boleh kosong");
+      return;
+    }
+
+    // Cek apakah ada minimal 1 score yang terisi
+    const hasScore1 = scores.score1.total && parseInt(scores.score1.total) > 0;
+    const hasScore2 = scores.score2.total && parseInt(scores.score2.total) > 0;
+
+    if (!hasScore1 && !hasScore2 && !scores.score3.total && !scores.score4.total) {
+      toast.error("Minimal harus ada 1 set nilai yang terisi");
+      return;
+    }
+
+    setDownloading(true);
+    try {
+      const examFinishDate = profile.tanggal_selesai_ujian ? new Date(profile.tanggal_selesai_ujian) : new Date();
+
+      // Siapkan data untuk generate certificate
+      const certificateData = {
+        id: profile.id,
+        nama: formData.nama,
+        tempat_lahir: formData.tempat_lahir,
+        tanggal_lahir: format(date, "yyyy-MM-dd"),
+        tanggal_selesai_ujian: format(examFinishDate, "yyyy-MM-dd"),
+        nomor_registrasi: profile.nomor_registrasi || "REG-" + profile.id,
+        expired: format(addYears(examFinishDate, 2), "yyyy-MM-dd"), // 2 tahun dari tanggal tes
+
+        // Score 1
+        score_listening: scores.score1.listening ? parseInt(scores.score1.listening) : 0,
+        score_structure: scores.score1.structure ? parseInt(scores.score1.structure) : 0,
+        score_reading: scores.score1.reading ? parseInt(scores.score1.reading) : 0,
+        total_score: scores.score1.total ? parseFloat(scores.score1.total) : 0,
+
+        // Score 2 (untuk best score calculation)
+        score_listening2: scores.score2.listening ? parseInt(scores.score2.listening) : 0,
+        score_structure2: scores.score2.structure ? parseInt(scores.score2.structure) : 0,
+        score_reading2: scores.score2.reading ? parseInt(scores.score2.reading) : 0,
+        total_score2: scores.score2.total ? parseFloat(scores.score2.total) : 0,
+
+        // Score 3
+        score_listening3: scores.score3.listening ? parseInt(scores.score3.listening) : 0,
+        score_structure3: scores.score3.structure ? parseInt(scores.score3.structure) : 0,
+        score_reading3: scores.score3.reading ? parseInt(scores.score3.reading) : 0,
+        total_score3: scores.score3.total ? parseFloat(scores.score3.total) : 0,
+
+        // Score 4
+        score_listening4: scores.score4.listening ? parseInt(scores.score4.listening) : 0,
+        score_structure4: scores.score4.structure ? parseInt(scores.score4.structure) : 0,
+        score_reading4: scores.score4.reading ? parseInt(scores.score4.reading) : 0,
+        total_score4: scores.score4.total ? parseFloat(scores.score4.total) : 0,
+      };
+
+      // Generate certificate
+      await generateCertificate(certificateData);
+
+      toast.success("Sertifikat berhasil didownload!");
+    } catch (error) {
+      console.error("Error generating certificate:", error);
+      toast.error("Gagal membuat sertifikat. Silakan coba lagi.");
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -192,6 +300,8 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
   const scoreTabs = [
     { id: "score1", label: "Score 1" },
     { id: "score2", label: "Score 2" },
+    { id: "score3", label: "Score 3" },
+    { id: "score4", label: "Score 4" },
   ];
 
   return (
@@ -209,7 +319,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
             <ChevronLeft className="h-6 w-6 text-black group-hover:text-white" />
             <span className="sr-only">Back</span>
           </Link>
-          <h1 className="text-xl font-black uppercase tracking-tight text-black flex items-center gap-2">Edit User: {profile.nama}</h1>
+          <h1 className="text-md md:text-xl font-black uppercase tracking-tight text-black flex items-center gap-2"> {profile.nama}</h1>
           <div className="w-10 sm:hidden"></div>
         </div>
       </header>
@@ -269,7 +379,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
             </div>
           </div>
 
-          {/* Date of Birth Picker (Full Width Button) */}
+          {/* Date of Birth Picker */}
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -309,12 +419,12 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
                   <div className="relative">
                     <Input
                       value={scores[tab.id as keyof typeof scores].listening}
-                      onChange={(e) => handleScoreChange(tab.id as "score1" | "score2", "listening", e.target.value)}
+                      onChange={(e) => handleScoreChange(tab.id as "score1" | "score2" | "score3" | "score4", "listening", e.target.value)}
                       className="h-14 rounded-lg border-2 border-slate-200 bg-white px-4 pt-2 font-bold text-black shadow-sm focus-visible:ring-0 focus-visible:border-black transition-all"
                       placeholder="Contoh: 50"
                     />
                     {scores[tab.id as keyof typeof scores].listening && (
-                      <button onClick={() => handleScoreChange(tab.id as "score1" | "score2", "listening", "")} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 transition-colors">
+                      <button onClick={() => handleScoreChange(tab.id as "score1" | "score2" | "score3" | "score4", "listening", "")} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 transition-colors">
                         <X className="h-4 w-4" />
                       </button>
                     )}
@@ -326,12 +436,12 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
                   <div className="relative">
                     <Input
                       value={scores[tab.id as keyof typeof scores].structure}
-                      onChange={(e) => handleScoreChange(tab.id as "score1" | "score2", "structure", e.target.value)}
+                      onChange={(e) => handleScoreChange(tab.id as "score1" | "score2" | "score3" | "score4", "structure", e.target.value)}
                       className="h-14 rounded-lg border-2 border-slate-200 bg-white px-4 pt-2 font-bold text-black shadow-sm focus-visible:ring-0 focus-visible:border-black transition-all"
                       placeholder="Contoh: 50"
                     />
                     {scores[tab.id as keyof typeof scores].structure && (
-                      <button onClick={() => handleScoreChange(tab.id as "score1" | "score2", "structure", "")} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 transition-colors">
+                      <button onClick={() => handleScoreChange(tab.id as "score1" | "score2" | "score3" | "score4", "structure", "")} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 transition-colors">
                         <X className="h-4 w-4" />
                       </button>
                     )}
@@ -343,12 +453,12 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
                   <div className="relative">
                     <Input
                       value={scores[tab.id as keyof typeof scores].reading}
-                      onChange={(e) => handleScoreChange(tab.id as "score1" | "score2", "reading", e.target.value)}
+                      onChange={(e) => handleScoreChange(tab.id as "score1" | "score2" | "score3" | "score4", "reading", e.target.value)}
                       className="h-14 rounded-lg border-2 border-slate-200 bg-white px-4 pt-2 font-bold text-black shadow-sm focus-visible:ring-0 focus-visible:border-black transition-all"
                       placeholder="Contoh: 50"
                     />
                     {scores[tab.id as keyof typeof scores].reading && (
-                      <button onClick={() => handleScoreChange(tab.id as "score1" | "score2", "reading", "")} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 transition-colors">
+                      <button onClick={() => handleScoreChange(tab.id as "score1" | "score2" | "score3" | "score4", "reading", "")} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 transition-colors">
                         <X className="h-4 w-4" />
                       </button>
                     )}
@@ -363,12 +473,12 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
             ))}
           </Tabs>
 
-          {/* Action Buttons */}
+          {/* Action Buttons - BAGIAN YANG DIUBAH */}
           <div className="grid grid-cols-2 sm:grid-cols-2 gap-4 mt-2 mb-8">
             <Button
               onClick={handleSave}
               disabled={saving}
-              className="h-14 rounded-xl border-2 border-black bg-slate-800 text-white font-bold text-lg hover:bg-black hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all active:translate-y-0 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-14 rounded-xl border-2 border-black bg-slate-800 text-white font-bold text-sm md:text-lg hover:bg-black hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all active:translate-y-0 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? (
                 <>
@@ -382,8 +492,24 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
                 </>
               )}
             </Button>
-            <Button className="h-14 rounded-xl border-2 border-black bg-white text-black font-bold text-lg hover:bg-slate-50 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all active:translate-y-0 active:shadow-none">
-              Download Sertifikat
+
+            {/* BUTTON DOWNLOAD - DITAMBAHKAN FUNGSI onClick */}
+            <Button
+              onClick={handleDownloadCertificate}
+              disabled={downloading}
+              className="h-14 rounded-xl border-2 border-black bg-white text-black font-bold text-sm md:text-lg hover:bg-slate-50 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all active:translate-y-0 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {downloading ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Membuat...
+                </>
+              ) : (
+                <>
+                  <Download className="mr-2 h-5 w-5" />
+                  Download Sertifikat
+                </>
+              )}
             </Button>
           </div>
         </div>

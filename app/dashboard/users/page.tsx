@@ -168,7 +168,7 @@ export default function UsersPage() {
               <SelectTrigger className="w-full sm:w-[180px] h-12 rounded-lg border-2 border-black bg-white px-4 text-left font-medium text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-primary/5 focus:ring-0">
                 <SelectValue placeholder="Pilih Tahun" />
               </SelectTrigger>
-              <SelectContent className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-lg">
+              <SelectContent className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-lg" position="popper">
                 <SelectItem value=" " className="font-medium focus:bg-primary focus:text-white cursor-pointer text-slate-500">
                   Semua Tahun
                 </SelectItem>
@@ -187,7 +187,7 @@ export default function UsersPage() {
               >
                 <SelectValue placeholder={selectedYear ? "Pilih Bulan" : "Pilih Bulan"} />
               </SelectTrigger>
-              <SelectContent className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-lg max-h-60">
+              <SelectContent className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-lg max-h-60" position="popper">
                 <SelectItem value=" " className="font-medium focus:bg-primary focus:text-white cursor-pointer text-slate-500">
                   Semua Bulan
                 </SelectItem>
