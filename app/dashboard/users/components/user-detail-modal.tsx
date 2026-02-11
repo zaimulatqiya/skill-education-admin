@@ -112,7 +112,7 @@ export function UserDetailModal({ user, open, onOpenChange }: UserDetailModalPro
         {/* Header */}
         <div className="flex items-start justify-between border-b-2 border-black p-6 bg-slate-50">
           <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-black bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <User className="h-8 w-8 text-black" />
             </div>
             <div>

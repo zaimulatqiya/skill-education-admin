@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { UserListItem } from "./components/user-list-item";
 import { UserDetailModal } from "./components/user-detail-modal";
+import { DashboardHeader } from "../components/dashboard-header";
 import { Profile } from "@/types/profile";
 import { filterProfilesByDate } from "@/lib/profile-api";
 import { toast } from "sonner";
@@ -128,22 +129,7 @@ export default function UsersPage() {
       ></div>
 
       {/* Header */}
-      <header className="relative z-10 w-full bg-white border-b-2 border-black sticky top-0 shadow-sm">
-        <div className="max-w-screen-xl mx-auto px-4 h-16 flex items-center justify-between sm:justify-center relative">
-          <Link
-            href="/dashboard"
-            className="group p-2 -ml-2 rounded-lg border-2 border-transparent hover:border-black hover:bg-primary hover:text-white hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all sm:absolute sm:left-4 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-          >
-            <ChevronLeft className="h-6 w-6 text-black group-hover:text-white" />
-            <span className="sr-only">Back</span>
-          </Link>
-          <h1 className="text-xl font-black uppercase tracking-tight text-black flex items-center gap-2">
-            <span className="w-3 h-3 bg-primary border-2 border-black rounded-full block"></span>
-            Cari User
-          </h1>
-          <div className="w-10 sm:hidden"></div>
-        </div>
-      </header>
+      <DashboardHeader title="Cari User" />
 
       {/* Main Content */}
       <div className="relative z-10 w-full max-w-screen-xl mx-auto px-4 py-8 flex flex-col gap-8">
@@ -203,7 +189,7 @@ export default function UsersPage() {
             {hasActiveFilters && (
               <button
                 onClick={handleClearFilters}
-                className="h-12 px-4 rounded-lg border-2 border-black bg-red-500 text-white font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-red-600 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none whitespace-nowrap"
+                className="h-12 px-4 rounded-lg border-2 border-black bg-red-500 text-white font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-red-600 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none whitespace-nowrap cursor-pointer"
               >
                 Clear Filter
               </button>

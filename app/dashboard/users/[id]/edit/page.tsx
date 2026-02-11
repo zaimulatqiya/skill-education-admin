@@ -17,6 +17,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { getProfileById, updateProfile } from "@/lib/profile-api";
 import { Profile, UpdateProfilePayload } from "@/types/profile";
+import { DashboardHeader } from "../../../components/dashboard-header"; // Relative path to dashboard-header
 
 import generateCertificate from "@/lib/generatepdf";
 
@@ -310,19 +311,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
       <div className="fixed inset-0 z-0 opacity-20 pointer-events-none" style={{ backgroundImage: "radial-gradient(#000 1px, transparent 1px)", backgroundSize: "20px 20px" }}></div>
 
       {/* Header */}
-      <header className="relative z-50 w-full bg-white border-b-2 border-black sticky top-0 shadow-sm flex-none">
-        <div className="max-w-screen-xl mx-auto px-4 h-16 flex items-center justify-between sm:justify-center relative">
-          <Link
-            href="/dashboard/users"
-            className="group p-2 -ml-2 rounded-lg border-2 border-transparent hover:border-black hover:bg-primary hover:text-white hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all sm:absolute sm:left-4 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-          >
-            <ChevronLeft className="h-6 w-6 text-black group-hover:text-white" />
-            <span className="sr-only">Back</span>
-          </Link>
-          <h1 className="text-md md:text-xl font-black uppercase tracking-tight text-black flex items-center gap-2"> {profile.nama}</h1>
-          <div className="w-10 sm:hidden"></div>
-        </div>
-      </header>
+      <DashboardHeader title={profile.nama} backUrl="/dashboard/users" />
 
       {/* Main Content */}
       <div className="flex-1 w-full overflow-y-auto sm:overflow-hidden relative z-0">

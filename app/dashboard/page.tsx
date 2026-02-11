@@ -19,13 +19,13 @@ export default function DashboardPage() {
     {
       title: "Nomor Admin",
       icon: Headset,
-      href: "#",
+      href: "/dashboard/nomor-admin",
       variant: "default" as const,
     },
     {
       title: "Aktifkan Ujian",
       icon: FileCheck2,
-      href: "#",
+      href: "/dashboard/ujian",
       variant: "default" as const,
     },
     {
