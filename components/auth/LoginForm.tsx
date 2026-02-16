@@ -16,8 +16,17 @@ export const LoginForm = () => {
     e.preventDefault();
     setError("");
 
-    // Hardcoded credentials for demo
-    if (email === "halo@gmail.com" && password === "123456") {
+    // Hardcoded credentials
+    const validUsers = [
+      { email: "halo@gmail.com", password: "123456", role: "certificate" },
+      { email: "Kopihijau27@gmail.com", password: "AdminApk2026", role: "certificate" },
+      { email: "mrlanguageform@gmail.com", password: "AdminApk2026", role: "barcode" },
+    ];
+
+    const user = validUsers.find((u) => u.email === email && u.password === password);
+
+    if (user) {
+      localStorage.setItem("userRole", user.role);
       router.push("/dashboard");
     } else {
       setError("Invalid email or password");

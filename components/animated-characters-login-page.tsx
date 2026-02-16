@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, Mail, Sparkles } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface PupilProps {
@@ -38,7 +37,6 @@ const Pupil = ({ size = 12, maxDistance = 5, pupilColor = "black", forceLookX, f
   const calculatePupilPosition = () => {
     if (!pupilRef.current) return { x: 0, y: 0 };
 
-    // If forced look direction is provided, use that instead of mouse tracking
     if (forceLookX !== undefined && forceLookY !== undefined) {
       return { x: forceLookX, y: forceLookY };
     }
@@ -107,7 +105,6 @@ const EyeBall = ({ size = 48, pupilSize = 16, maxDistance = 10, eyeColor = "whit
   const calculatePupilPosition = () => {
     if (!eyeRef.current) return { x: 0, y: 0 };
 
-    // If forced look direction is provided, use that instead of mouse tracking
     if (forceLookX !== undefined && forceLookY !== undefined) {
       return { x: forceLookX, y: forceLookY };
     }
@@ -132,7 +129,7 @@ const EyeBall = ({ size = 48, pupilSize = 16, maxDistance = 10, eyeColor = "whit
   return (
     <div
       ref={eyeRef}
-      className="rounded-full flex items-center justify-center transition-all duration-150"
+      className="rounded-full flex items-center justify-center transition-all duration-150 border-2 border-black"
       style={{
         width: `${size}px`,
         height: isBlinking ? "2px" : `${size}px`,
@@ -185,9 +182,8 @@ function AnimatedLoginPage() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  // Blinking effect for purple character
   useEffect(() => {
-    const getRandomBlinkInterval = () => Math.random() * 4000 + 3000; // Random between 3-7 seconds
+    const getRandomBlinkInterval = () => Math.random() * 4000 + 3000;
 
     const scheduleBlink = () => {
       const blinkTimeout = setTimeout(() => {
@@ -195,7 +191,7 @@ function AnimatedLoginPage() {
         setTimeout(() => {
           setIsPurpleBlinking(false);
           scheduleBlink();
-        }, 150); // Blink duration 150ms
+        }, 150);
       }, getRandomBlinkInterval());
 
       return blinkTimeout;
@@ -205,9 +201,8 @@ function AnimatedLoginPage() {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Blinking effect for black character
   useEffect(() => {
-    const getRandomBlinkInterval = () => Math.random() * 4000 + 3000; // Random between 3-7 seconds
+    const getRandomBlinkInterval = () => Math.random() * 4000 + 3000;
 
     const scheduleBlink = () => {
       const blinkTimeout = setTimeout(() => {
@@ -215,7 +210,7 @@ function AnimatedLoginPage() {
         setTimeout(() => {
           setIsBlackBlinking(false);
           scheduleBlink();
-        }, 150); // Blink duration 150ms
+        }, 150);
       }, getRandomBlinkInterval());
 
       return blinkTimeout;
@@ -225,20 +220,18 @@ function AnimatedLoginPage() {
     return () => clearTimeout(timeout);
   }, []);
 
-  // Looking at each other animation when typing starts
   useEffect(() => {
     if (isTyping) {
       setIsLookingAtEachOther(true);
       const timer = setTimeout(() => {
         setIsLookingAtEachOther(false);
-      }, 800); // Look at each other for 1.5 seconds, then back to tracking mouse
+      }, 800);
       return () => clearTimeout(timer);
     } else {
       setIsLookingAtEachOther(false);
     }
   }, [isTyping]);
 
-  // Purple sneaky peeking animation when typing password and it's visible
   useEffect(() => {
     if (password.length > 0 && showPassword) {
       const schedulePeek = () => {
@@ -247,10 +240,10 @@ function AnimatedLoginPage() {
             setIsPurplePeeking(true);
             setTimeout(() => {
               setIsPurplePeeking(false);
-            }, 800); // Peek for 800ms
+            }, 800);
           },
           Math.random() * 3000 + 2000,
-        ); // Random peek every 2-5 seconds
+        );
         return peekInterval;
       };
 
@@ -266,16 +259,14 @@ function AnimatedLoginPage() {
 
     const rect = ref.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 3; // Focus on head area
+    const centerY = rect.top + rect.height / 3;
 
     const deltaX = mouseX - centerX;
     const deltaY = mouseY - centerY;
 
-    // Face movement (limited range)
     const faceX = Math.max(-15, Math.min(15, deltaX / 20));
     const faceY = Math.max(-10, Math.min(10, deltaY / 30));
 
-    // Body lean (skew for lean while keeping bottom straight) - negative to lean towards mouse
     const bodySkew = Math.max(-6, Math.min(6, -deltaX / 120));
 
     return { faceX, faceY, bodySkew };
@@ -291,18 +282,20 @@ function AnimatedLoginPage() {
     setError("");
     setIsLoading(true);
 
-    // Simulate API delay (quick)
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    // Mock authentication - validate against dummy credentials
-    if ((email === "erik@gmail.com" && password === "1234") || (email === "halo@gmail.com" && password === "123456")) {
+    const validUsers = [
+      { email: "halo@gmail.com", password: "123456", role: "certificate" },
+      { email: "Kopihijau27@gmail.com", password: "AdminApk2026", role: "certificate" },
+      { email: "mrlanguageform@gmail.com", password: "AdminApk2026", role: "barcode" },
+    ];
+
+    const user = validUsers.find((u) => u.email === email && u.password === password);
+
+    if (user) {
       console.log("✅ Login successful!");
-      // alert("Login successful! Welcome, Erik!");
+      localStorage.setItem("userRole", user.role);
       router.push("/dashboard");
-      // In a real app, you would:
-      // - Store auth token
-      // - Redirect to dashboard
-      // - Set user session
     } else {
       setError("Invalid email or password. Please try again.");
       console.log("❌ Login failed");
@@ -312,22 +305,28 @@ function AnimatedLoginPage() {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
+    <div className="min-h-screen flex flex-col lg:grid lg:grid-cols-2 bg-neutral-50 text-foreground">
       {/* Left Content Section */}
-      <div className="relative hidden lg:flex flex-col justify-between bg-gradient-to-br from-primary/90 via-primary to-primary/80 p-12 text-primary-foreground">
-        <div className="relative z-20">
+      <div className="relative flex-1 flex flex-col items-center justify-end lg:justify-end bg-primary border-b-4 lg:border-b-0 lg:border-r-4 border-black overflow-hidden h-[45vh] lg:h-auto border-neutral-950">
+        {/* Branding Logo */}
+        <div className="absolute top-6 left-6 z-20 bg-white border-2 border-black px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
           <div className="flex items-center gap-2">
-            <img src="/assets/logo SE.png" alt="Skill Education Logo" className="h-16 w-auto object-contain" />
+            <img src="/assets/logo-2.png" alt="Skill Education Logo" className="h-20 w-auto object-contain" />
           </div>
         </div>
 
-        <div className="relative z-20 flex items-end justify-center h-[500px]">
-          {/* Cartoon Characters */}
-          <div className="relative" style={{ width: "550px", height: "400px" }}>
-            {/* Purple tall rectangle character - Back layer */}
+        {/* Decorative Grid */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000020_1px,transparent_1px),linear-gradient(to_bottom,#00000020_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+        <div className="absolute top-10 right-10 w-16 h-16 bg-yellow-400 border-2 border-black rounded-full content-none hidden lg:block" />
+        <div className="absolute bottom-40 left-10 w-8 h-8 bg-white border-2 border-black rotate-45 hidden lg:block" />
+
+        <div className="relative z-20 w-full flex justify-center pb-0">
+          {/* Cartoon Characters Container - Scaled for responsiveness */}
+          <div className="relative overflow-visible scale-[0.55] sm:scale-75 md:scale-85 lg:scale-100 origin-bottom transition-transform duration-300" style={{ width: "550px", height: "400px" }}>
+            {/* Purple Character */}
             <div
               ref={purpleRef}
-              className="absolute bottom-0 transition-all duration-700 ease-in-out"
+              className="absolute bottom-0 transition-all duration-700 ease-in-out border-2 border-black"
               style={{
                 left: "70px",
                 width: "180px",
@@ -337,9 +336,9 @@ function AnimatedLoginPage() {
                 zIndex: 1,
                 transform: password.length > 0 && showPassword ? `skewX(0deg)` : isTyping || (password.length > 0 && !showPassword) ? `skewX(${(purplePos.bodySkew || 0) - 12}deg) translateX(40px)` : `skewX(${purplePos.bodySkew || 0}deg)`,
                 transformOrigin: "bottom center",
+                boxShadow: "8px 8px 0px 0px rgba(0,0,0,0.2)",
               }}
             >
-              {/* Eyes */}
               <div
                 className="absolute flex gap-8 transition-all duration-700 ease-in-out"
                 style={{
@@ -370,10 +369,10 @@ function AnimatedLoginPage() {
               </div>
             </div>
 
-            {/* Black tall rectangle character - Middle layer */}
+            {/* Black Character */}
             <div
               ref={blackRef}
-              className="absolute bottom-0 transition-all duration-700 ease-in-out"
+              className="absolute bottom-0 transition-all duration-700 ease-in-out border-2 border-black"
               style={{
                 left: "240px",
                 width: "120px",
@@ -390,9 +389,9 @@ function AnimatedLoginPage() {
                         ? `skewX(${(blackPos.bodySkew || 0) * 1.5}deg)`
                         : `skewX(${blackPos.bodySkew || 0}deg)`,
                 transformOrigin: "bottom center",
+                boxShadow: "6px 6px 0px 0px rgba(0,0,0,0.2)",
               }}
             >
-              {/* Eyes */}
               <div
                 className="absolute flex gap-6 transition-all duration-700 ease-in-out"
                 style={{
@@ -423,10 +422,10 @@ function AnimatedLoginPage() {
               </div>
             </div>
 
-            {/* Orange semi-circle character - Front left */}
+            {/* Orange Character */}
             <div
               ref={orangeRef}
-              className="absolute bottom-0 transition-all duration-700 ease-in-out"
+              className="absolute bottom-0 transition-all duration-700 ease-in-out border-2 border-black"
               style={{
                 left: "0px",
                 width: "240px",
@@ -436,9 +435,9 @@ function AnimatedLoginPage() {
                 borderRadius: "120px 120px 0 0",
                 transform: password.length > 0 && showPassword ? `skewX(0deg)` : `skewX(${orangePos.bodySkew || 0}deg)`,
                 transformOrigin: "bottom center",
+                boxShadow: "6px 6px 0px 0px rgba(0,0,0,0.2)",
               }}
             >
-              {/* Eyes - just pupils, no white */}
               <div
                 className="absolute flex gap-8 transition-all duration-200 ease-out"
                 style={{
@@ -451,10 +450,10 @@ function AnimatedLoginPage() {
               </div>
             </div>
 
-            {/* Yellow tall rectangle character - Front right */}
+            {/* Yellow Character */}
             <div
               ref={yellowRef}
-              className="absolute bottom-0 transition-all duration-700 ease-in-out"
+              className="absolute bottom-0 transition-all duration-700 ease-in-out border-2 border-black"
               style={{
                 left: "310px",
                 width: "140px",
@@ -464,9 +463,9 @@ function AnimatedLoginPage() {
                 zIndex: 4,
                 transform: password.length > 0 && showPassword ? `skewX(0deg)` : `skewX(${yellowPos.bodySkew || 0}deg)`,
                 transformOrigin: "bottom center",
+                boxShadow: "6px 6px 0px 0px rgba(0,0,0,0.2)",
               }}
             >
-              {/* Eyes - just pupils, no white */}
               <div
                 className="absolute flex gap-6 transition-all duration-200 ease-out"
                 style={{
@@ -477,7 +476,6 @@ function AnimatedLoginPage() {
                 <Pupil size={12} maxDistance={5} pupilColor="#2D2D2D" forceLookX={password.length > 0 && showPassword ? -5 : undefined} forceLookY={password.length > 0 && showPassword ? -4 : undefined} />
                 <Pupil size={12} maxDistance={5} pupilColor="#2D2D2D" forceLookX={password.length > 0 && showPassword ? -5 : undefined} forceLookY={password.length > 0 && showPassword ? -4 : undefined} />
               </div>
-              {/* Horizontal line for mouth */}
               <div
                 className="absolute w-20 h-[4px] bg-[#2D2D2D] rounded-full transition-all duration-200 ease-out"
                 style={{
@@ -488,61 +486,44 @@ function AnimatedLoginPage() {
             </div>
           </div>
         </div>
-
-        <div className="relative z-20 flex items-center gap-8 text-sm text-primary-foreground/60">
-          <a href="#" className="hover:text-primary-foreground transition-colors">
-            Privacy Policy
-          </a>
-          <a href="#" className="hover:text-primary-foreground transition-colors">
-            Terms of Service
-          </a>
-          <a href="#" className="hover:text-primary-foreground transition-colors">
-            Contact
-          </a>
-        </div>
-
-        {/* Decorative elements */}
-        <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]" />
-        <div className="absolute top-1/4 right-1/4 size-64 bg-primary-foreground/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/4 size-96 bg-primary-foreground/5 rounded-full blur-3xl" />
       </div>
 
       {/* Right Login Section */}
-      <div className="flex items-center justify-center p-8 bg-background">
-        <div className="w-full max-w-[420px]">
-          {/* Mobile Logo */}
-          <div className="lg:hidden flex items-center justify-center mb-12">
-            <img src="/assets/logo SE.png" alt="Skill Education Logo" className="h-12 w-auto object-contain" />
-          </div>
+      <div className="relative flex items-center justify-center p-6 lg:p-12 bg-white overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-20" style={{ backgroundImage: "radial-gradient(#000 1px, transparent 1px)", backgroundSize: "20px 20px" }}></div>
+        <div className="w-full max-w-[480px] border-4 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white relative">
+          {/* Decorative Corner Element */}
+          <div className="absolute -top-3 -left-3 size-6 bg-[#2563eb] border-2 border-black" />
+          <div className="absolute -bottom-3 -right-3 size-6 bg-[#7c3aed] border-2 border-black" />
 
           {/* Header */}
-          <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold tracking-tight mb-2">Selamat datang</h1>
-            <p className="text-muted-foreground text-sm">Please enter your details</p>
+          <div className="mb-8">
+            <h1 className="text-4xl font-black tracking-tighter mb-2 uppercase">Selamat datang</h1>
+            <p className="text-muted-foreground font-medium border-l-4 border-[#FF9B6B] pl-3">Please enter your details to continue</p>
           </div>
 
           {/* Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">
+              <Label htmlFor="email" className="text-base font-bold uppercase">
                 Email
               </Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="anna@gmail.com"
+                placeholder="ANNA@GMAIL.COM"
                 value={email}
                 autoComplete="off"
                 onChange={(e) => setEmail(e.target.value)}
                 onFocus={() => setIsTyping(true)}
                 onBlur={() => setIsTyping(false)}
                 required
-                className="h-12 bg-background border-border/60 focus:border-primary"
+                className="h-14 bg-neutral-50 border-2 border-black rounded-none focus:ring-0 focus:border-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all font-medium text-lg placeholder:text-neutral-400"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium">
+              <Label htmlFor="password" className="text-base font-bold uppercase">
                 Password
               </Label>
               <div className="relative">
@@ -553,29 +534,33 @@ function AnimatedLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="h-12 pr-10 bg-background border-border/60 focus:border-primary"
+                  className="h-14 pr-12 bg-neutral-50 border-2 border-black rounded-none focus:ring-0 focus:border-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all font-medium text-lg placeholder:text-neutral-400"
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
-                  {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-black transition-colors">
+                  {showPassword ? <EyeOff className="size-6" strokeWidth={2.5} /> : <Eye className="size-6" strokeWidth={2.5} />}
                 </button>
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between pt-2">
               <div className="flex items-center space-x-2">
-                <Checkbox id="remember" />
-                <Label htmlFor="remember" className="text-sm font-normal cursor-pointer">
+                <Checkbox id="remember" className="border-2 border-black rounded-none data-[state=checked]:bg-black data-[state=checked]:text-white size-5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]" />
+                <Label htmlFor="remember" className="text-sm font-bold cursor-pointer uppercase">
                   Remember me
                 </Label>
               </div>
-              <a href="#" className="text-sm text-primary hover:underline font-medium">
+              <a href="#" className="text-sm text-primary hover:underline font-bold uppercase decoration-2 underline-offset-4">
                 Forgot password?
               </a>
             </div>
 
-            {error && <div className="p-3 text-sm text-red-400 bg-red-950/20 border border-red-900/30 rounded-lg">{error}</div>}
+            {error && <div className="p-4 text-sm font-bold text-red-600 bg-red-100 border-2 border-red-600 shadow-[4px_4px_0px_0px_rgba(220,38,38,1)] uppercase">{error}</div>}
 
-            <Button type="submit" className="w-full h-12 text-base font-medium" size="lg" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full h-14 text-lg font-black uppercase text-white bg-black hover:bg-neutral-800 border-2 border-black rounded-none shadow-[4px_4px_0px_0px_#2563eb] hover:translate-y-1 hover:shadow-none transition-all active:translate-y-1 active:shadow-none cursor-pointer"
+              disabled={isLoading}
+            >
               {isLoading ? "Signing in..." : "Log in"}
             </Button>
           </form>

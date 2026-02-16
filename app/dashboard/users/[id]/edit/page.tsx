@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ChevronLeft, X, Save, Loader2, Download } from "lucide-react"; // Tambahkan Download icon
+import { ChevronLeft, X, Save, Loader2, Download, QrCode } from "lucide-react"; // Tambahkan Download icon
 import { format, addYears } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { useRouter } from "next/navigation";
@@ -19,7 +19,7 @@ import { getProfileById, updateProfile } from "@/lib/profile-api";
 import { Profile, UpdateProfilePayload } from "@/types/profile";
 import { DashboardHeader } from "../../../components/dashboard-header"; // Relative path to dashboard-header
 
-import generateCertificate from "@/lib/generatepdf";
+import generateCertificate, { downloadQR } from "@/lib/generatepdf";
 
 export default function EditUserPage({ params }: { params: Promise<{ id: string }> }) {
   // Unwrap params using React.use()
@@ -32,6 +32,14 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
 
   // TAMBAHKAN STATE UNTUK LOADING DOWNLOAD
   const [downloading, setDownloading] = React.useState(false);
+  const [userRole, setUserRole] = React.useState("certificate");
+
+  React.useEffect(() => {
+    const role = localStorage.getItem("userRole");
+    if (role) {
+      setUserRole(role);
+    }
+  }, []);
 
   // Form States
   const [formData, setFormData] = React.useState({
@@ -320,6 +328,24 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
     } catch (error) {
       console.error("Error generating certificate:", error);
       toast.error("Gagal membuat sertifikat. Silakan coba lagi.");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const handleDownloadBarcode = async () => {
+    if (!profile) {
+      toast.error("Data profile tidak tersedia");
+      return;
+    }
+
+    setDownloading(true);
+    try {
+      await downloadQR(profile);
+      toast.success("Barcode berhasil didownload!");
+    } catch (error) {
+      console.error("Error generating barcode:", error);
+      toast.error("Gagal membuat barcode. Silakan coba lagi.");
     } finally {
       setDownloading(false);
     }
@@ -630,23 +656,43 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
             </Button>
 
             {/* BUTTON DOWNLOAD - DITAMBAHKAN FUNGSI onClick */}
-            <Button
-              onClick={handleDownloadCertificate}
-              disabled={downloading}
-              className="h-14 rounded-xl border-2 border-black bg-white text-black font-bold text-sm md:text-lg hover:bg-slate-50 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all active:translate-y-0 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-            >
-              {downloading ? (
-                <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Membuat...
-                </>
-              ) : (
-                <>
-                  <Download className="mr-2 h-5 w-5" />
-                  Download Sertifikat
-                </>
-              )}
-            </Button>
+            {userRole === "barcode" ? (
+              <Button
+                onClick={handleDownloadBarcode}
+                disabled={downloading}
+                className="h-14 rounded-xl border-2 border-black bg-white text-black font-bold text-sm md:text-lg hover:bg-slate-50 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all active:translate-y-0 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              >
+                {downloading ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Membuat...
+                  </>
+                ) : (
+                  <>
+                    <QrCode className="mr-2 h-5 w-5" />
+                    Download Barcode
+                  </>
+                )}
+              </Button>
+            ) : (
+              <Button
+                onClick={handleDownloadCertificate}
+                disabled={downloading}
+                className="h-14 rounded-xl border-2 border-black bg-white text-black font-bold text-sm md:text-lg hover:bg-slate-50 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all active:translate-y-0 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              >
+                {downloading ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Membuat...
+                  </>
+                ) : (
+                  <>
+                    <Download className="mr-2 h-5 w-5" />
+                    Download Sertifikat
+                  </>
+                )}
+              </Button>
+            )}
           </div>
         </div>
       </div>
