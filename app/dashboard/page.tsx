@@ -1,4 +1,4 @@
-import { LineChart, User, Headset, FileCheck2, LogOut, Link } from "lucide-react";
+import { LineChart, User, Headset, FileCheck2, LogOut, Link, Package, PlayCircle } from "lucide-react";
 import { DashboardCard } from "./components/dashboard-card";
 import { DashboardFooter } from "../../components/layout/dashboard-footer";
 
@@ -26,6 +26,18 @@ export default function DashboardPage() {
       title: "Aktifkan Ujian",
       icon: FileCheck2,
       href: "/dashboard/ujian",
+      variant: "default" as const,
+    },
+    {
+      title: "Paket Program",
+      icon: Package,
+      href: "/dashboard/paket-program",
+      variant: "default" as const,
+    },
+    {
+      title: "Start Pembelajaran",
+      icon: PlayCircle,
+      href: "/dashboard/start-pembelajaran",
       variant: "default" as const,
     },
     {
