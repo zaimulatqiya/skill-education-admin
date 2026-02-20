@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Save, Trash2, Pencil, Plus, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
@@ -15,6 +16,7 @@ interface ProgramSchedule {
   day: string;
   month: string;
   year: string;
+  program_type?: string;
 }
 
 const MONTHS = [
@@ -41,6 +43,9 @@ export default function StartPembelajaranPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Active Tab
+  const [activeTab, setActiveTab] = useState("toefl");
+
   // Active Items
   const [editingSchedule, setEditingSchedule] = useState<ProgramSchedule | null>(null);
   const [scheduleToDelete, setScheduleToDelete] = useState<ProgramSchedule | null>(null);
@@ -50,6 +55,7 @@ export default function StartPembelajaranPage() {
     day: "",
     month: "",
     year: "",
+    program_type: "toefl",
   });
 
   // Fetch data
@@ -94,6 +100,7 @@ export default function StartPembelajaranPage() {
         day: schedule.day.toString(),
         month: schedule.month.toString(),
         year: schedule.year.toString(),
+        program_type: schedule.program_type || "toefl",
       });
     } else {
       setEditingSchedule(null);
@@ -101,6 +108,7 @@ export default function StartPembelajaranPage() {
         day: "",
         month: "", // Reset to empty string
         year: "",
+        program_type: activeTab, // Default to active tab
       });
     }
     setIsDialogOpen(true);
@@ -129,7 +137,7 @@ export default function StartPembelajaranPage() {
 
     try {
       let response;
-      const payload = { ...formData }; // Payload already has month as string
+      const payload = { ...formData }; // Payload includes program_type
 
       if (editingSchedule) {
         // Edit via API (PUT)
@@ -221,50 +229,123 @@ export default function StartPembelajaranPage() {
           {/* List of Schedules */}
           {isLoading ? (
             <div className="text-center py-10 font-bold text-slate-500">Memuat jadwal...</div>
-          ) : schedules.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-slate-300 rounded-xl bg-white/50">
-              <Calendar className="h-12 w-12 text-slate-300 mb-4" />
-              <p className="text-lg font-bold text-slate-500">Belum ada jadwal pembelajaran.</p>
-              <Button variant="link" onClick={() => handleOpenDialog()} className="text-blue-600 font-bold mt-2">
-                Buat Jadwal Baru
-              </Button>
-            </div>
           ) : (
-            <div className="flex flex-col gap-4">
-              {schedules.map((schedule, index) => (
-                <div
-                  key={schedule.id}
-                  className="group flex flex-col sm:flex-row items-center justify-between gap-4 rounded-xl border-2 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none"
+            <Tabs defaultValue="toefl" value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8 border-2 border-black p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white h-auto rounded-xl overflow-hidden">
+                <TabsTrigger
+                  value="toefl"
+                  className="px-6 py-3 font-bold text-base data-[state=active]:bg-yellow-400 data-[state=active]:text-black data-[state=active]:shadow-none active:shadow-none rounded-lg border-2 border-transparent data-[state=active]:border-black"
                 >
-                  <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border-2 border-black bg-yellow-400 font-black text-xl text-black">#{index + 1}</div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-2xl sm:text-3xl font-black text-black">{schedule.day}</span>
-                      <span className="text-2xl sm:text-3xl font-black text-slate-300 mx-1">/</span>
-                      <span className="text-2xl sm:text-3xl font-black text-black uppercase">{schedule.month}</span>
-                      <span className="text-2xl sm:text-3xl font-black text-slate-300 mx-1">/</span>
-                      <span className="text-2xl sm:text-3xl font-black text-black">{schedule.year}</span>
-                    </div>
-                  </div>
+                  Kelas TOEFL
+                </TabsTrigger>
+                <TabsTrigger
+                  value="beasiswa"
+                  className="px-6 py-3 font-bold text-base data-[state=active]:bg-yellow-400 data-[state=active]:text-black data-[state=active]:shadow-none active:shadow-none rounded-lg border-2 border-transparent data-[state=active]:border-black"
+                >
+                  Beasiswa
+                </TabsTrigger>
+              </TabsList>
 
-                  <div className="flex w-full sm:w-auto items-center gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => handleOpenDialog(schedule)}
-                      className="flex-1 sm:flex-none border-2 border-black bg-white font-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-slate-100 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-x-[2px] active:translate-y-[2px] cursor-pointer"
-                    >
-                      <Pencil className="mr-2 h-3.5 w-3.5" /> Edit
-                    </Button>
-                    <Button
-                      onClick={() => confirmDelete(schedule)}
-                      className="flex-1 sm:flex-none border-2 border-black bg-red-500 font-bold text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-red-600 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-x-[2px] active:translate-y-[2px] cursor-pointer"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
+              <TabsContent value="toefl" className="mt-0">
+                {schedules.filter((s) => !s.program_type || s.program_type === "toefl").length === 0 ? (
+                  <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-slate-300 rounded-xl bg-white/50">
+                    <Calendar className="h-12 w-12 text-slate-300 mb-4" />
+                    <p className="text-lg font-bold text-slate-500">Belum ada jadwal pembelajaran TOEFL.</p>
+                    <Button variant="link" onClick={() => handleOpenDialog()} className="text-blue-600 font-bold mt-2">
+                      Buat Jadwal Baru
                     </Button>
                   </div>
-                </div>
-              ))}
-            </div>
+                ) : (
+                  <div className="flex flex-col gap-4">
+                    {schedules
+                      .filter((s) => !s.program_type || s.program_type === "toefl")
+                      .map((schedule, index) => (
+                        <div
+                          key={schedule.id}
+                          className="group flex flex-col sm:flex-row items-center justify-between gap-4 rounded-xl border-2 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none"
+                        >
+                          <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border-2 border-black bg-yellow-400 font-black text-xl text-black">#{index + 1}</div>
+                            <div className="flex items-center gap-1">
+                              <span className="text-2xl sm:text-3xl font-black text-black">{schedule.day}</span>
+                              <span className="text-2xl sm:text-3xl font-black text-slate-300 mx-1">/</span>
+                              <span className="text-2xl sm:text-3xl font-black text-black uppercase">{schedule.month}</span>
+                              <span className="text-2xl sm:text-3xl font-black text-slate-300 mx-1">/</span>
+                              <span className="text-2xl sm:text-3xl font-black text-black">{schedule.year}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex w-full sm:w-auto items-center gap-2">
+                            <Button
+                              variant="outline"
+                              onClick={() => handleOpenDialog(schedule)}
+                              className="flex-1 sm:flex-none border-2 border-black bg-white font-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-slate-100 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-x-[2px] active:translate-y-[2px] cursor-pointer"
+                            >
+                              <Pencil className="mr-2 h-3.5 w-3.5" /> Edit
+                            </Button>
+                            <Button
+                              onClick={() => confirmDelete(schedule)}
+                              className="flex-1 sm:flex-none border-2 border-black bg-red-500 font-bold text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-red-600 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-x-[2px] active:translate-y-[2px] cursor-pointer"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="beasiswa" className="mt-0">
+                {schedules.filter((s) => s.program_type === "beasiswa").length === 0 ? (
+                  <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-slate-300 rounded-xl bg-white/50">
+                    <Calendar className="h-12 w-12 text-slate-300 mb-4" />
+                    <p className="text-lg font-bold text-slate-500">Belum ada jadwal pembelajaran Beasiswa.</p>
+                    <Button variant="link" onClick={() => handleOpenDialog()} className="text-blue-600 font-bold mt-2">
+                      Buat Jadwal Baru
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-4">
+                    {schedules
+                      .filter((s) => s.program_type === "beasiswa")
+                      .map((schedule, index) => (
+                        <div
+                          key={schedule.id}
+                          className="group flex flex-col sm:flex-row items-center justify-between gap-4 rounded-xl border-2 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none"
+                        >
+                          <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border-2 border-black bg-yellow-400 font-black text-xl text-black">#{index + 1}</div>
+                            <div className="flex items-center gap-1">
+                              <span className="text-2xl sm:text-3xl font-black text-black">{schedule.day}</span>
+                              <span className="text-2xl sm:text-3xl font-black text-slate-300 mx-1">/</span>
+                              <span className="text-2xl sm:text-3xl font-black text-black uppercase">{schedule.month}</span>
+                              <span className="text-2xl sm:text-3xl font-black text-slate-300 mx-1">/</span>
+                              <span className="text-2xl sm:text-3xl font-black text-black">{schedule.year}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex w-full sm:w-auto items-center gap-2">
+                            <Button
+                              variant="outline"
+                              onClick={() => handleOpenDialog(schedule)}
+                              className="flex-1 sm:flex-none border-2 border-black bg-white font-bold text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-slate-100 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-x-[2px] active:translate-y-[2px] cursor-pointer"
+                            >
+                              <Pencil className="mr-2 h-3.5 w-3.5" /> Edit
+                            </Button>
+                            <Button
+                              onClick={() => confirmDelete(schedule)}
+                              className="flex-1 sm:flex-none border-2 border-black bg-red-500 font-bold text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-red-600 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-x-[2px] active:translate-y-[2px] cursor-pointer"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
           )}
         </div>
 
@@ -283,6 +364,28 @@ export default function StartPembelajaranPage() {
             <div className="p-8 bg-white">
               <form id="scheduleForm" onSubmit={handleSave} className="space-y-6">
                 <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="program_type" className="text-xs font-bold text-slate-500 uppercase">
+                      Jenis Program
+                    </Label>
+                    <Select value={formData.program_type} onValueChange={(value) => setFormData((prev) => ({ ...prev, program_type: value }))}>
+                      <SelectTrigger
+                        id="program_type"
+                        className="h-12 w-full text-center text-lg font-bold border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:ring-0 focus:ring-offset-0 focus:shadow-none focus:translate-x-[2px] focus:translate-y-[2px] transition-all rounded-lg relative flex items-center justify-between px-4 [&>svg]:relative [&>svg]:transform-none [&_span]:text-left"
+                      >
+                        <SelectValue placeholder="Pilih Program" />
+                      </SelectTrigger>
+                      <SelectContent position="popper" sideOffset={5} className="w-[var(--radix-select-trigger-width)] border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                        <SelectItem value="toefl" className="font-bold focus:bg-yellow-200 cursor-pointer">
+                          Kelas TOEFL
+                        </SelectItem>
+                        <SelectItem value="beasiswa" className="font-bold focus:bg-yellow-200 cursor-pointer">
+                          Beasiswa
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
                   <Label className="text-sm font-black uppercase text-black">Tanggal Pelaksanaan</Label>
                   <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-2">

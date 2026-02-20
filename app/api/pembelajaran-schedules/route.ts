@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { day, month, year } = body;
+    const { day, month, year, program_type = "toefl" } = body;
 
     if (!day || !month || !year) {
       return errorResponse("Missing required fields (day, month, year)", null, 400);
@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
           day: parseInt(day),
           month: month, // Store directly as string
           year: parseInt(year),
+          program_type: program_type,
         },
       ])
       .select();
@@ -59,22 +60,22 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, day, month, year } = body;
+    const { id, day, month, year, program_type } = body;
 
     if (!id) {
       return errorResponse("Schedule ID is required", null, 400);
     }
 
+    // Prepare update object
+    const updateData: any = {
+      day: parseInt(day),
+      month: month, // Store directly as string
+      year: parseInt(year),
+    };
+    if (program_type) updateData.program_type = program_type;
+
     // Update in DB
-    const { data, error } = await supabase
-      .from("pembelajaran_schedules")
-      .update({
-        day: parseInt(day),
-        month: month, // Store directly as string
-        year: parseInt(year),
-      })
-      .eq("id", id)
-      .select();
+    const { data, error } = await supabase.from("pembelajaran_schedules").update(updateData).eq("id", id).select();
 
     if (error) {
       return errorResponse("Failed to update schedule", error.message);

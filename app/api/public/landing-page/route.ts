@@ -43,6 +43,7 @@ export async function GET(request: NextRequest) {
         day: sch.day,
         month: sch.month,
         year: sch.year,
+        program_type: sch.program_type, // Also return program_type
       })),
       timestamp: new Date().toISOString(),
     };
