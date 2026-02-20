@@ -231,16 +231,16 @@ export default function StartPembelajaranPage() {
             <div className="text-center py-10 font-bold text-slate-500">Memuat jadwal...</div>
           ) : (
             <Tabs defaultValue="toefl" value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8 border-2 border-black p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white h-auto rounded-xl overflow-hidden">
+              <TabsList className="flex w-full max-w-md mx-auto mb-8 border-2 border-black p-1.5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white h-auto rounded-full">
                 <TabsTrigger
                   value="toefl"
-                  className="px-6 py-3 font-bold text-base data-[state=active]:bg-yellow-400 data-[state=active]:text-black data-[state=active]:shadow-none active:shadow-none rounded-lg border-2 border-transparent data-[state=active]:border-black"
+                  className="flex-1 flex items-center justify-center py-2.5 font-bold text-base text-slate-500 data-[state=active]:bg-yellow-400 data-[state=active]:text-black data-[state=active]:shadow-none active:shadow-none rounded-full border-2 border-transparent data-[state=active]:border-black transition-all"
                 >
                   Kelas TOEFL
                 </TabsTrigger>
                 <TabsTrigger
                   value="beasiswa"
-                  className="px-6 py-3 font-bold text-base data-[state=active]:bg-yellow-400 data-[state=active]:text-black data-[state=active]:shadow-none active:shadow-none rounded-lg border-2 border-transparent data-[state=active]:border-black"
+                  className="flex-1 flex items-center justify-center py-2.5 font-bold text-base text-slate-500 data-[state=active]:bg-yellow-400 data-[state=active]:text-black data-[state=active]:shadow-none active:shadow-none rounded-full border-2 border-transparent data-[state=active]:border-black transition-all"
                 >
                   Beasiswa
                 </TabsTrigger>
