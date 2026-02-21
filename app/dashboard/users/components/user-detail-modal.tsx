@@ -50,15 +50,9 @@ export function UserDetailModal({ user, open, onOpenChange }: UserDetailModalPro
     { key: "listening4", name: "Listening", completed: currentUser.listening4, score: currentUser.score_listening4 },
     { key: "structure4", name: "Structure", completed: currentUser.structure4, score: currentUser.score_structure4 },
   ];
-
-  /**
-   * Handle toggling exam status
-   * If status is changed to from true (completed) to false (not completed), reset the score.
-   */
   const handleToggleStatus = async (examType: 1 | 2 | 3 | 4, fieldKey: string, currentStatus: boolean | undefined) => {
     if (updating) return;
 
-    // Determine new values
     const newStatus = !currentStatus;
 
     // Construct field names
