@@ -25,22 +25,7 @@ export interface Profile {
   score_structure2: number | null; // int4
   score_reading2: number | null; // int4
   total_score2: number | null; // float4
-  // Score 3
-  structure3?: boolean; // bool
-  listening3?: boolean; // bool
-  reading3?: boolean; // bool
-  score_listening3?: number | null; // int4
-  score_structure3?: number | null; // int4
-  score_reading3?: number | null; // int4
-  total_score3?: number | null; // float4
-  // Score 4
-  structure4?: boolean; // bool
-  listening4?: boolean; // bool
-  reading4?: boolean; // bool
-  score_listening4?: number | null; // int4
-  score_structure4?: number | null; // int4
-  score_reading4?: number | null; // int4
-  total_score4?: number | null; // float4
+
   tanggal_selesai_ujian: string | null; // date
   kategori_soal: number | null; // int2
   tanggal_cetak_sertifikat?: string | null; // date
@@ -72,22 +57,7 @@ export interface CreateProfilePayload {
   score_structure2?: number | null;
   score_reading2?: number | null;
   total_score2?: number | null;
-  // Score 3
-  structure3?: boolean;
-  listening3?: boolean;
-  reading3?: boolean;
-  score_listening3?: number | null;
-  score_structure3?: number | null;
-  score_reading3?: number | null;
-  total_score3?: number | null;
-  // Score 4
-  structure4?: boolean;
-  listening4?: boolean;
-  reading4?: boolean;
-  score_listening4?: number | null;
-  score_structure4?: number | null;
-  score_reading4?: number | null;
-  total_score4?: number | null;
+
   tanggal_selesai_ujian?: string | null;
   kategori_soal?: number | null;
   tanggal_cetak_sertifikat?: string | null;

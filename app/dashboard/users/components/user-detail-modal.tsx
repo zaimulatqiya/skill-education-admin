@@ -39,23 +39,11 @@ export function UserDetailModal({ user, open, onOpenChange }: UserDetailModalPro
     { key: "structure2", name: "Structure", completed: currentUser.structure2, score: currentUser.score_structure2 },
   ];
 
-  const exam3 = [
-    { key: "reading3", name: "Reading", completed: currentUser.reading3, score: currentUser.score_reading3 },
-    { key: "listening3", name: "Listening", completed: currentUser.listening3, score: currentUser.score_listening3 },
-    { key: "structure3", name: "Structure", completed: currentUser.structure3, score: currentUser.score_structure3 },
-  ];
-
-  const exam4 = [
-    { key: "reading4", name: "Reading", completed: currentUser.reading4, score: currentUser.score_reading4 },
-    { key: "listening4", name: "Listening", completed: currentUser.listening4, score: currentUser.score_listening4 },
-    { key: "structure4", name: "Structure", completed: currentUser.structure4, score: currentUser.score_structure4 },
-  ];
-
   /**
    * Handle toggling exam status
    * If status is changed to from true (completed) to false (not completed), reset the score.
    */
-  const handleToggleStatus = async (examType: 1 | 2 | 3 | 4, fieldKey: string, currentStatus: boolean | undefined) => {
+  const handleToggleStatus = async (examType: 1 | 2, fieldKey: string, currentStatus: boolean | undefined) => {
     if (updating) return;
 
     // Determine new values
@@ -100,8 +88,6 @@ export function UserDetailModal({ user, open, onOpenChange }: UserDetailModalPro
 
   const hasExam1 = currentUser.reading || currentUser.listening || currentUser.structure || currentUser.total_score !== null;
   const hasExam2 = currentUser.reading2 || currentUser.listening2 || currentUser.structure2 || currentUser.total_score2 !== null;
-  const hasExam3 = currentUser.reading3 || currentUser.listening3 || currentUser.structure3 || currentUser.total_score3 !== null;
-  const hasExam4 = currentUser.reading4 || currentUser.listening4 || currentUser.structure4 || currentUser.total_score4 !== null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -166,18 +152,6 @@ export function UserDetailModal({ user, open, onOpenChange }: UserDetailModalPro
                   <p className="text-2xl font-black text-black">{currentUser.total_score2?.toFixed(0)}</p>
                 </div>
               )}
-              {currentUser.total_score3 !== null && (
-                <div className="rounded-lg border-2 border-black bg-gradient-to-br from-purple-50 to-purple-100 p-4 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                  <p className="text-xs font-bold text-slate-600 mb-1">Total Skor 3</p>
-                  <p className="text-2xl font-black text-black">{currentUser.total_score3?.toFixed(0)}</p>
-                </div>
-              )}
-              {currentUser.total_score4 !== null && (
-                <div className="rounded-lg border-2 border-black bg-gradient-to-br from-orange-50 to-orange-100 p-4 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                  <p className="text-xs font-bold text-slate-600 mb-1">Total Skor 4</p>
-                  <p className="text-2xl font-black text-black">{currentUser.total_score4?.toFixed(0)}</p>
-                </div>
-              )}
             </div>
           </div>
 
@@ -193,12 +167,6 @@ export function UserDetailModal({ user, open, onOpenChange }: UserDetailModalPro
               </TabsTrigger>
               <TabsTrigger value="exam2" className="flex-1 rounded-md px-3 py-1.5 text-xs font-bold text-slate-500 data-[state=active]:bg-black data-[state=active]:text-white transition-all">
                 Ujian 2
-              </TabsTrigger>
-              <TabsTrigger value="exam3" className="flex-1 rounded-md px-3 py-1.5 text-xs font-bold text-slate-500 data-[state=active]:bg-black data-[state=active]:text-white transition-all">
-                Ujian 3
-              </TabsTrigger>
-              <TabsTrigger value="exam4" className="flex-1 rounded-md px-3 py-1.5 text-xs font-bold text-slate-500 data-[state=active]:bg-black data-[state=active]:text-white transition-all">
-                Ujian 4
               </TabsTrigger>
             </TabsList>
 
@@ -228,42 +196,6 @@ export function UserDetailModal({ user, open, onOpenChange }: UserDetailModalPro
                     {exam.score !== null && <p className="text-xs text-slate-500 mt-0.5">Skor: {exam.score}</p>}
                   </div>
                   <div onClick={() => handleToggleStatus(2, exam.key, exam.completed)} className="cursor-pointer transition-transform active:scale-95">
-                    {exam.completed ? (
-                      <Badge className="bg-emerald-500 hover:bg-emerald-600 border-2 border-emerald-700 text-white font-bold rounded-md px-3 shadow-[2px_2px_0px_0px_rgba(6,95,70,1)]">Selesai</Badge>
-                    ) : (
-                      <Badge className="bg-red-500 hover:bg-red-600 border-2 border-red-700 text-white font-bold rounded-md px-3 shadow-[2px_2px_0px_0px_rgba(185,28,28,1)]">Belum Selesai</Badge>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </TabsContent>
-
-            <TabsContent value="exam3" className="mt-4 space-y-3">
-              {exam3.map((exam) => (
-                <div key={`exam3-${exam.key}`} className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-3 hover:border-black hover:bg-slate-50 transition-colors">
-                  <div className="flex-1">
-                    <span className="text-sm font-bold text-black">Ujian {exam.name}</span>
-                    {exam.score !== null && <p className="text-xs text-slate-500 mt-0.5">Skor: {exam.score}</p>}
-                  </div>
-                  <div onClick={() => handleToggleStatus(3, exam.key, exam.completed)} className="cursor-pointer transition-transform active:scale-95">
-                    {exam.completed ? (
-                      <Badge className="bg-emerald-500 hover:bg-emerald-600 border-2 border-emerald-700 text-white font-bold rounded-md px-3 shadow-[2px_2px_0px_0px_rgba(6,95,70,1)]">Selesai</Badge>
-                    ) : (
-                      <Badge className="bg-red-500 hover:bg-red-600 border-2 border-red-700 text-white font-bold rounded-md px-3 shadow-[2px_2px_0px_0px_rgba(185,28,28,1)]">Belum Selesai</Badge>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </TabsContent>
-
-            <TabsContent value="exam4" className="mt-4 space-y-3">
-              {exam4.map((exam) => (
-                <div key={`exam4-${exam.key}`} className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-3 hover:border-black hover:bg-slate-50 transition-colors">
-                  <div className="flex-1">
-                    <span className="text-sm font-bold text-black">Ujian {exam.name}</span>
-                    {exam.score !== null && <p className="text-xs text-slate-500 mt-0.5">Skor: {exam.score}</p>}
-                  </div>
-                  <div onClick={() => handleToggleStatus(4, exam.key, exam.completed)} className="cursor-pointer transition-transform active:scale-95">
                     {exam.completed ? (
                       <Badge className="bg-emerald-500 hover:bg-emerald-600 border-2 border-emerald-700 text-white font-bold rounded-md px-3 shadow-[2px_2px_0px_0px_rgba(6,95,70,1)]">Selesai</Badge>
                     ) : (

@@ -157,22 +157,7 @@ export async function POST(request: NextRequest) {
           score_structure2: body.score_structure2 || null,
           score_reading2: body.score_reading2 || null,
           total_score2: body.total_score2 || null,
-          // Score 3
-          structure3: body.structure3 || false,
-          listening3: body.listening3 || false,
-          reading3: body.reading3 || false,
-          score_listening3: body.score_listening3 || null,
-          score_structure3: body.score_structure3 || null,
-          score_reading3: body.score_reading3 || null,
-          total_score3: body.total_score3 || null,
-          // Score 4
-          structure4: body.structure4 || false,
-          listening4: body.listening4 || false,
-          reading4: body.reading4 || false,
-          score_listening4: body.score_listening4 || null,
-          score_structure4: body.score_structure4 || null,
-          score_reading4: body.score_reading4 || null,
-          total_score4: body.total_score4 || null,
+
           tanggal_selesai_ujian: body.tanggal_selesai_ujian || null,
           kategori_soal: body.kategori_soal || null,
           tanggal_cetak_sertifikat: body.tanggal_cetak_sertifikat || null,
