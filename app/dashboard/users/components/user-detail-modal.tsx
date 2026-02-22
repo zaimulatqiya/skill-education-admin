@@ -192,16 +192,12 @@ export function UserDetailModal({ user, open, onOpenChange }: UserDetailModalPro
               <TabsTrigger value="exam2" className="flex-1 rounded-md px-3 py-1.5 text-xs font-bold text-slate-500 data-[state=active]:bg-black data-[state=active]:text-white transition-all">
                 Ujian 2
               </TabsTrigger>
-              {(hasExam3 || currentUser.total_score3 !== null) && (
-                <TabsTrigger value="exam3" className="flex-1 rounded-md px-3 py-1.5 text-xs font-bold text-slate-500 data-[state=active]:bg-black data-[state=active]:text-white transition-all">
-                  Ujian 3
-                </TabsTrigger>
-              )}
-              {(hasExam4 || currentUser.total_score4 !== null) && (
-                <TabsTrigger value="exam4" className="flex-1 rounded-md px-3 py-1.5 text-xs font-bold text-slate-500 data-[state=active]:bg-black data-[state=active]:text-white transition-all">
-                  Ujian 4
-                </TabsTrigger>
-              )}
+              <TabsTrigger value="exam3" className="flex-1 rounded-md px-3 py-1.5 text-xs font-bold text-slate-500 data-[state=active]:bg-black data-[state=active]:text-white transition-all">
+                Ujian 3
+              </TabsTrigger>
+              <TabsTrigger value="exam4" className="flex-1 rounded-md px-3 py-1.5 text-xs font-bold text-slate-500 data-[state=active]:bg-black data-[state=active]:text-white transition-all">
+                Ujian 4
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="exam1" className="mt-4 space-y-3">
