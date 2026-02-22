@@ -309,6 +309,18 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
         score_structure2: scores.score2.structure ? parseInt(scores.score2.structure) : 0,
         score_reading2: scores.score2.reading ? parseInt(scores.score2.reading) : 0,
         total_score2: scores.score2.total ? parseFloat(scores.score2.total) : 0,
+
+        // Score 3 (untuk best score calculation)
+        score_listening3: scores.score3.listening ? parseInt(scores.score3.listening) : 0,
+        score_structure3: scores.score3.structure ? parseInt(scores.score3.structure) : 0,
+        score_reading3: scores.score3.reading ? parseInt(scores.score3.reading) : 0,
+        total_score3: scores.score3.total ? parseFloat(scores.score3.total) : 0,
+
+        // Score 4 (untuk best score calculation)
+        score_listening4: scores.score4.listening ? parseInt(scores.score4.listening) : 0,
+        score_structure4: scores.score4.structure ? parseInt(scores.score4.structure) : 0,
+        score_reading4: scores.score4.reading ? parseInt(scores.score4.reading) : 0,
+        total_score4: scores.score4.total ? parseFloat(scores.score4.total) : 0,
       };
 
       // Generate certificate
