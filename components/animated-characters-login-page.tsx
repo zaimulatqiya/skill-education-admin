@@ -295,6 +295,14 @@ function AnimatedLoginPage() {
     if (user) {
       console.log("✅ Login successful!");
       localStorage.setItem("userRole", user.role);
+      localStorage.setItem("userEmail", user.email);
+
+      let userName = "Admin";
+      if (user.email === "halo@gmail.com") userName = "Halo";
+      if (user.email === "Kopihijau27@gmail.com") userName = "Kopi Hijau 27";
+      if (user.email === "mrlanguageform@gmail.com") userName = "Mr Language Form";
+      localStorage.setItem("userName", userName);
+
       router.push("/dashboard");
     } else {
       setError("Invalid email or password. Please try again.");
