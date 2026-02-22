@@ -67,6 +67,18 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
       reading: "",
       total: "",
     },
+    score3: {
+      listening: "",
+      structure: "",
+      reading: "",
+      total: "",
+    },
+    score4: {
+      listening: "",
+      structure: "",
+      reading: "",
+      total: "",
+    },
   });
 
   // ... (kode fetch data tetap sama)
@@ -121,6 +133,18 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
               reading: data.score_reading2?.toString() || "",
               total: data.total_score2?.toString() || "",
             },
+            score3: {
+              listening: data.score_listening3?.toString() || "",
+              structure: data.score_structure3?.toString() || "",
+              reading: data.score_reading3?.toString() || "",
+              total: data.total_score3?.toString() || "",
+            },
+            score4: {
+              listening: data.score_listening4?.toString() || "",
+              structure: data.score_structure4?.toString() || "",
+              reading: data.score_reading4?.toString() || "",
+              total: data.total_score4?.toString() || "",
+            },
           });
         } else {
           toast.error("User tidak ditemukan");
@@ -138,7 +162,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
   }, [id, router]);
 
   // ... (fungsi handleScoreChange tetap sama)
-  const handleScoreChange = (scoreType: "score1" | "score2", field: "listening" | "structure" | "reading", value: string) => {
+  const handleScoreChange = (scoreType: "score1" | "score2" | "score3" | "score4", field: "listening" | "structure" | "reading", value: string) => {
     if (value && !/^\d*$/.test(value)) return;
 
     setScores((prev) => {
@@ -196,6 +220,22 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
         score_reading2: scores.score2.reading ? parseInt(scores.score2.reading) : null,
         reading2: !!scores.score2.reading,
         total_score2: scores.score2.total ? parseFloat(scores.score2.total) : null,
+
+        score_listening3: scores.score3.listening ? parseInt(scores.score3.listening) : null,
+        listening3: !!scores.score3.listening,
+        score_structure3: scores.score3.structure ? parseInt(scores.score3.structure) : null,
+        structure3: !!scores.score3.structure,
+        score_reading3: scores.score3.reading ? parseInt(scores.score3.reading) : null,
+        reading3: !!scores.score3.reading,
+        total_score3: scores.score3.total ? parseFloat(scores.score3.total) : null,
+
+        score_listening4: scores.score4.listening ? parseInt(scores.score4.listening) : null,
+        listening4: !!scores.score4.listening,
+        score_structure4: scores.score4.structure ? parseInt(scores.score4.structure) : null,
+        structure4: !!scores.score4.structure,
+        score_reading4: scores.score4.reading ? parseInt(scores.score4.reading) : null,
+        reading4: !!scores.score4.reading,
+        total_score4: scores.score4.total ? parseFloat(scores.score4.total) : null,
       };
 
       await updateProfile(payload);
@@ -235,8 +275,10 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
     // Cek apakah ada minimal 1 score yang terisi
     const hasScore1 = scores.score1.total && parseInt(scores.score1.total) > 0;
     const hasScore2 = scores.score2.total && parseInt(scores.score2.total) > 0;
+    const hasScore3 = scores.score3.total && parseInt(scores.score3.total) > 0;
+    const hasScore4 = scores.score4.total && parseInt(scores.score4.total) > 0;
 
-    if (!hasScore1 && !hasScore2) {
+    if (!hasScore1 && !hasScore2 && !hasScore3 && !hasScore4) {
       toast.error("Minimal harus ada 1 set nilai yang terisi");
       return;
     }
@@ -312,6 +354,8 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
   const scoreTabs = [
     { id: "score1", label: "Score 1" },
     { id: "score2", label: "Score 2" },
+    { id: "score3", label: "Score 3" },
+    { id: "score4", label: "Score 4" },
   ];
 
   return (
@@ -417,12 +461,12 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
                   <div className="relative">
                     <Input
                       value={scores[tab.id as keyof typeof scores].listening}
-                      onChange={(e) => handleScoreChange(tab.id as "score1" | "score2", "listening", e.target.value)}
+                      onChange={(e) => handleScoreChange(tab.id as "score1" | "score2" | "score3" | "score4", "listening", e.target.value)}
                       className="h-14 rounded-lg border-2 border-slate-200 bg-white px-4 pt-2 font-bold text-black shadow-sm focus-visible:ring-0 focus-visible:border-black transition-all"
                       placeholder="Contoh: 50"
                     />
                     {scores[tab.id as keyof typeof scores].listening && (
-                      <button onClick={() => handleScoreChange(tab.id as "score1" | "score2", "listening", "")} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 transition-colors">
+                      <button onClick={() => handleScoreChange(tab.id as "score1" | "score2" | "score3" | "score4", "listening", "")} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 transition-colors">
                         <X className="h-4 w-4" />
                       </button>
                     )}
@@ -434,12 +478,12 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
                   <div className="relative">
                     <Input
                       value={scores[tab.id as keyof typeof scores].structure}
-                      onChange={(e) => handleScoreChange(tab.id as "score1" | "score2", "structure", e.target.value)}
+                      onChange={(e) => handleScoreChange(tab.id as "score1" | "score2" | "score3" | "score4", "structure", e.target.value)}
                       className="h-14 rounded-lg border-2 border-slate-200 bg-white px-4 pt-2 font-bold text-black shadow-sm focus-visible:ring-0 focus-visible:border-black transition-all"
                       placeholder="Contoh: 50"
                     />
                     {scores[tab.id as keyof typeof scores].structure && (
-                      <button onClick={() => handleScoreChange(tab.id as "score1" | "score2", "structure", "")} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 transition-colors">
+                      <button onClick={() => handleScoreChange(tab.id as "score1" | "score2" | "score3" | "score4", "structure", "")} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 transition-colors">
                         <X className="h-4 w-4" />
                       </button>
                     )}
@@ -451,12 +495,12 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
                   <div className="relative">
                     <Input
                       value={scores[tab.id as keyof typeof scores].reading}
-                      onChange={(e) => handleScoreChange(tab.id as "score1" | "score2", "reading", e.target.value)}
+                      onChange={(e) => handleScoreChange(tab.id as "score1" | "score2" | "score3" | "score4", "reading", e.target.value)}
                       className="h-14 rounded-lg border-2 border-slate-200 bg-white px-4 pt-2 font-bold text-black shadow-sm focus-visible:ring-0 focus-visible:border-black transition-all"
                       placeholder="Contoh: 50"
                     />
                     {scores[tab.id as keyof typeof scores].reading && (
-                      <button onClick={() => handleScoreChange(tab.id as "score1" | "score2", "reading", "")} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 transition-colors">
+                      <button onClick={() => handleScoreChange(tab.id as "score1" | "score2" | "score3" | "score4", "reading", "")} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 transition-colors">
                         <X className="h-4 w-4" />
                       </button>
                     )}
