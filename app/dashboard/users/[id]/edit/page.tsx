@@ -47,6 +47,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
     email: "",
     nomor_whatsapp: "",
     tempat_lahir: "",
+    nomor_registrasi: "",
   });
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [testDate, setTestDate] = React.useState<Date | undefined>(undefined);
@@ -96,6 +97,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
             email: data.email || "",
             nomor_whatsapp: data.nomor_whatsapp || "",
             tempat_lahir: data.tempat_lahir || "",
+            nomor_registrasi: data.nomor_registrasi?.toString() || "",
           });
 
           if (data.tanggal_lahir) {
@@ -200,6 +202,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
         email: formData.email,
         nomor_whatsapp: formData.nomor_whatsapp,
         tempat_lahir: formData.tempat_lahir,
+        nomor_registrasi: formData.nomor_registrasi ? parseInt(formData.nomor_registrasi) : null,
         tanggal_lahir: date ? format(date, "yyyy-MM-dd") : null,
         tanggal_selesai_ujian: testDate ? format(testDate, "yyyy-MM-dd") : null,
         tanggal_cetak_sertifikat: printDate ? format(printDate, "yyyy-MM-dd") : null,
@@ -528,9 +531,20 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
           </Tabs>
 
           {/* Certificate Information Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t-2 border-slate-200 pt-6 mt-4">
-            <div className="md:col-span-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 border-t-2 border-slate-200 pt-6 mt-4">
+            <div className="md:col-span-2 lg:col-span-4">
               <h3 className="text-lg font-black text-slate-700 mb-2 uppercase tracking-wide">Informasi Sertifikat</h3>
+            </div>
+
+            {/* Nomor Registrasi */}
+            <div className="flex flex-col gap-2">
+              <Label className="text-xs font-bold text-slate-500 uppercase">Nomor Registrasi</Label>
+              <Input
+                value={formData.nomor_registrasi}
+                onChange={(e) => setFormData({ ...formData, nomor_registrasi: e.target.value })}
+                className="h-14 rounded-xl border-2 border-slate-200 bg-white px-4 font-bold text-black shadow-sm focus-visible:ring-0 focus-visible:border-black transition-all"
+                placeholder="Contoh: 123456"
+              />
             </div>
 
             {/* Expired Date */}
